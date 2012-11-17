@@ -1,0 +1,1 @@
+module.exports = require('./lib/epub2web.js');
