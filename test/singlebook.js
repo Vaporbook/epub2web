@@ -7,8 +7,14 @@ var mime = require('mime');
 
 var epub2web = require('../index.js');
 var port = 8124;
-var cacheDir = __dirname+'/../www/cache';
-var epubDir = __dirname+'/epubs';
+var bookfile = process.argv[2];
+var cacheDir = __dirname+"/../www/cache";
+
+if(!bookfile) {
+	throw "you must specify an epub file for this example to work.";
+}
+
+var epubDir = cacheDir;
 
 // attach to any cache dir you want for cache location of exploded epubs
 
@@ -22,10 +28,19 @@ var server = http.createServer(function (req,res) {
 
 	if(req.url=='/') {
 
-		    res.writeHead(200, ['Content-Type', 'text/html']);
-		    res.write('<p>Append an epub filename onto the /read/ URL ');
-		    res.end('to read the file! (try <a href="http://'+req.headers.host+'/read/testbook.epub">the test file</a> for starters)');
+			epub2web.webify(
+				bookfile, /* full path of epub file */
+				'read', /* template name for reading system */
+				function (err, cacheId, htmlApp) { /* callback after webify complete */
 
+					var cacheurl = '/cache/'+cacheId+'/';
+
+					res.writeHead(302, {
+						'Location': cacheurl
+					});
+					res.end();
+
+				});
 	} else if (urlparts = req.url.match(/\/cache\/([^\/]+?)\/?$/)) { /* get from cacheId */
 
 			epub2web.reader(
@@ -45,54 +60,38 @@ var server = http.createServer(function (req,res) {
 
 	} else if (urlparts = req.url.match(/\/cache\/([^\/]+?)\/(.+?)$/)) { /* get file from cache */
 
-
-
-			var cid = urlparts[1];
-			
 			var filename = cacheDir +'/'+urlparts[1]+'/'+urlparts[2];
+			
+			//application/vnd.adobe-page-template+xml causes warning in Chrome
 
-			var realpath = fs.realpathSync(filename);
-
-			var stat = fs.statSync(realpath);
+			mime.define({
+				'text/css': ['xpgt']
+			});
 
 			res.writeHead(200, {
 				'Content-Type': mime.lookup(filename),
-				'Content-Length': stat.size
+				'Content-Length': fs.statSync(fs.realpathSync(filename)).size
 			});
 
 		    res.end(fs.readFileSync(filename));
 
+	} else if (req.url == '/close') {
 
+			res.end('Done');
+			process.exit(0);
 
+	} else {
 
-	} else if (urlparts = req.url.match(/\/read\/(.+?\.epub)(.*?)$/)) { /* get from epub filename */
-
-
-			epub2web.webify(
-				epubDir+'/'+urlparts[1], /* full path of epub file */
-				'read', /* template name for reading system */
-				function (err, cacheId, htmlApp) { /* callback after webify complete */
-
-					// the htmlApp is the whole reading system,
-					// fully configured for this cacheId, so
-					// just pass it right to the browser
-
-					var cacheurl = '/cache/'+cacheId+'/';
-
-					res.writeHead(302, {
-						'Location': cacheurl
-					});
-					res.end();
-
-//					res.writeHead(200, ['Content-Type', 'text/html']);
-//					res.end(htmlApp);
-
-				});
+			res.writeHead(404, {
+				'Content-Type':'text/html'
+			})
+			res.end('404');
 
 	}
+	
 });
 
-console.log('server created - go to http://localhost:'+port+'/ to start');
+console.log('Server created for epub file '+bookfile+' - go to http://localhost:'+port+'/ to start');
 
 
 server.listen( port );

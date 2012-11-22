@@ -19,6 +19,7 @@
   "author": "vaporbook",
   "license": "BSD",
   "dependencies": {
-    "epub-cache": "0.0.3"
+    "epub-cache": "0.0.3",
+    "mime": "~1.2.7"
   }
 }
