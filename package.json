@@ -1,6 +1,6 @@
 {
   "name": "epub2web",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Web server module to allow reading of Epub content directly in the browser, without plugins or specialized applications. ",
   "main": "index.js",
   "directories": {

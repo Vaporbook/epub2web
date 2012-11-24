@@ -17,7 +17,7 @@ cat.on('newItem', function (data) {
 	fs.writeFileSync(coverDir+'/'+data.epubData.easy.md5+'.'+ext, data.coverData,'binary');
 });
 
-cat.buildIndex(catalogDir, parser, function (err, index) { // build a new index and replace the old (if it exists)
+cat.buildIndex(catalogDir, function (err, index) { // build a new index and replace the old (if it exists)
 
 	if(err) throw err;
 
