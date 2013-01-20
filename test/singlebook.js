@@ -14,7 +14,18 @@ if(!bookfile) {
 	throw "you must specify an epub file for this example to work.";
 }
 
+var myTemplateName = 'vaporbook';
+var myTemplateHtml = fs.readFileSync('./testreader.html');
+
+
 var epubDir = cacheDir;
+
+
+// add my custom reading system template
+
+console.log('adding custom reading template '+myTemplateName);
+
+epub2web.addTemplate(myTemplateName, myTemplateHtml);
 
 // attach to any cache dir you want for cache location of exploded epubs
 
@@ -30,7 +41,7 @@ var server = http.createServer(function (req,res) {
 
 			epub2web.webify(
 				bookfile, /* full path of epub file */
-				'read', /* template name for reading system */
+				myTemplateName, /* template name for reading system */
 				function (err, cacheId, htmlApp) { /* callback after webify complete */
 
 					var cacheurl = '/cache/'+cacheId+'/';
@@ -41,11 +52,12 @@ var server = http.createServer(function (req,res) {
 					res.end();
 
 				});
+
 	} else if (urlparts = req.url.match(/\/cache\/([^\/]+?)\/?$/)) { /* get from cacheId */
 
 			epub2web.reader(
 				urlparts[1],
-				'read', /* template name for reading system */
+				myTemplateName, /* template name for reading system */
 				function (err, cacheId, htmlApp) { /* callback after webify complete */
 
 					// the htmlApp is the whole reading system,
