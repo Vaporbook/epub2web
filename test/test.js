@@ -19,7 +19,7 @@ var myTemplateHtml = fs.readFileSync(__dirname+'/testreader.html');
 //var jsdom = require("jsdom").jsdom;
 
 // add custom reading template
-
+epub2web.attach(cacheDir);
 epub2web.addTemplate(myTemplateName, myTemplateHtml.toString());
 
 
