@@ -1,6 +1,6 @@
 {
   "name": "epub2web",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Web server module to allow reading of Epub content directly in the browser, without plugins or specialized applications. ",
   "main": "index.js",
   "directories": {
@@ -19,7 +19,7 @@
   "author": "vaporbook",
   "license": "BSD",
   "dependencies": {
-    "epub-cache": "0.0.7",
+    "epub-cache": "0.1.0",
     "epub-tmpl": "0.1.4",
     "mime": "~1.2.7"
   }
